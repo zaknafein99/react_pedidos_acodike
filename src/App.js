@@ -8,29 +8,49 @@ class App extends Component {
     super();
 
     this.state = {
-      items: [],
+      customers: [],
+      searchField: '',
     };
   }
 
   componentDidMount(){
-    fetch('http://localhost:8080/api/v1/items')
+    fetch('http://localhost:8080/api/v1/customers')
     .then((response) => response.json())
-    .then((items) => this.setState(() => {
-      return {items: items}
-    },
-    () => {
-        console.log(this.state);
-      }
+    .then((customers) => 
+        this.setState(
+          () => {
+            return {customers: customers};
+          },
+          () => {
+            console.log(this.state);
+          }
     ));
   }
 
   render(){
+
+    const filteredCustomers = this.state.customers.filter((customer) => {
+      return customer.telefono.toLocaleLowerCase().includes(this.state.searchField);
+    });
+
     return (
       <div className="App">
-        {this.state.items.map((item) => {
+      <input 
+        className='search-box' 
+        type='search' 
+        placeholder='telefono' 
+        onChange={(event) => {
+          const searchField = event.target.value.toLocaleLowerCase();
+          this.setState(() => {
+            return {searchField};
+          });
+
+        }}  
+      />
+        {filteredCustomers.map((customer) => {
           return (
-            <div key={item.codigo}>
-              <h1>{item.codigo} - {item.nombre}</h1>
+            <div key={customer.id}>
+              <h1>{customer.apellidonombre} - {customer.telefono}</h1>
             </div>
           );
         })}
