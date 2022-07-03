@@ -7,14 +7,15 @@ class App extends Component {
   constructor() {
     super();
 
-    this.state = {
+      this.state = {
       customers: [],
-      searchField: '',
+      searchField: '350',
+      url: `http://localhost:8080/api/v1/customers/${this.state.searchField}`
     };
   }
 
   componentDidMount(){
-    fetch('http://localhost:8080/api/v1/customers')
+    fetch(this.state.url)
     .then((response) => response.json())
     .then((customers) => 
         this.setState(
@@ -27,6 +28,13 @@ class App extends Component {
     ));
   }
 
+  onSearchChange = (event) => {
+    const searchField = event.target.value.toLocaleLowerCase();
+    this.setState(() => {
+      return {searchField};
+    });
+  }
+
   render(){
 
     const filteredCustomers = this.state.customers.filter((customer) => {
@@ -35,25 +43,42 @@ class App extends Component {
 
     return (
       <div className="App">
-      <input 
-        className='search-box' 
-        type='search' 
-        placeholder='telefono' 
-        onChange={(event) => {
-          const searchField = event.target.value.toLocaleLowerCase();
-          this.setState(() => {
-            return {searchField};
-          });
-
-        }}  
-      />
+      
+      <form onSubmit={this.onSearchChange}>
+        <label>
+          <input 
+            className='search-box' 
+            type='search' 
+            placeholder='telefono' 
+          />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+      <table>
+              <tr>
+                <th>Id</th>
+                <th>Cliente</th>
+                <th>Direccion</th>       
+                <th>Teléfono</th>
+              </tr>
         {filteredCustomers.map((customer) => {
           return (
-            <div key={customer.id}>
-              <h1>{customer.apellidonombre} - {customer.telefono}</h1>
-            </div>
+            // <div key={customer.id}>
+            //   <h1>{customer.apellidonombre} - {customer.telefono}</h1>
+            // </div>
+            
+              <tr>
+                <td>{customer.id}</td>
+                <td>{customer.apellidonombre}</td>
+                <td>{customer.direccion}</td>
+                <td>{customer.telefono}</td>
+              </tr>
           );
+
         })}
+        </table>
+
+        
       </div>
     );
   }
